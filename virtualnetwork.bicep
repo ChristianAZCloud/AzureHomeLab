@@ -2,6 +2,12 @@ targetScope = 'resourceGroup' /* Not Needed as the default scope is resourceGrou
 var virtualNetwork = 'eastUS-vNet-Prod'
 var location = resourceGroup().location
 var nsgName = 'eastUS-vNSG-Prod'
+
+resource vNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+  name: nsgName
+  location: location
+}
+
 resource vNet'Microsoft.Network/virtualNetworks@2024-01-01' = {
   name: virtualNetwork
   location: location
@@ -20,16 +26,10 @@ resource vNet'Microsoft.Network/virtualNetworks@2024-01-01' = {
           ]
           defaultOutboundAccess: false
           networkSecurityGroup: {
-             id:vNSG().id
+             id: vNSG.id
           }
         }
       }
     ]
     }  
   }
-
-  resource vNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
-    name: nsgName
-    location: location
-  }
-
