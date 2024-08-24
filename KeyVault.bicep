@@ -5,15 +5,13 @@ resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
   name: vaultName
   location: location
   properties: {
-     enabledForDeployment: true
-     enabledForDiskEncryption: true
-     enabledForTemplateDeployment: true
      enableRbacAuthorization: true
      enableSoftDelete: false
      networkAcls: {
-       bypass: 'None'
+       bypass: 'AzureServices'
        defaultAction: 'Deny'
      }
+      enabledForDiskEncryption: true
     sku: {
       name: 'standard'
       family: 'A'
