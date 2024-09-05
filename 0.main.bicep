@@ -32,3 +32,22 @@ module virtualNetwork '2.network.bicep' = {
     defaultOutboundAccess: defaultOutboundAccess
   }
 }
+
+param existingNSG string
+
+
+param vmName string
+@secure()
+param adminPWD string
+param adminUSER string
+param vNIC string
+module virtualMachine '3.activedirectory.bicep' = {
+  name: vmName
+  params: {
+    adminPWD: adminPWD
+    adminUSER: adminUSER
+    vmName: vmName
+    vNIC: vNIC
+    existingNSG: existingNSG
+  }
+}
