@@ -2,9 +2,11 @@ param resourcetags object
 param environment string
 
 param vaultName string
+param keyvaultrg string
 param enabledfortemplatedeployment bool
 module keyVault '1.KeyVault.bicep' = {
   name: vaultName
+  scope: resourceGroup(keyvaultrg)
   params: {
    resourcetags: resourcetags
    vaultName: vaultName
