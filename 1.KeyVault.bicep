@@ -3,7 +3,7 @@ var location = resourceGroup().location
 param resourcetags object
 param enabledfortemplatedeployment bool
 
-resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: vaultName
   location: location
   tags: resourcetags
