@@ -1,10 +1,20 @@
+// Global Parameters 
 param resourcetags object
 param environment string
+@allowed([
+  'vNET'
+  'VM'
+  'keyVault'
+])
+param deploymodule string
 
+
+
+// KeyVault Parameters 
 param vaultName string
 param keyvaultrg string
 param enabledfortemplatedeployment bool
-module keyVault '1.KeyVault.bicep' = {
+module keyVault '1.KeyVault.bicep' = if (deploymodule == 'keyVault'){
   name: vaultName
   scope: resourceGroup(keyvaultrg)
   params: {
@@ -14,13 +24,19 @@ module keyVault '1.KeyVault.bicep' = {
   }
 }
 
+// Virtual Network Parameters 
 param vNET string
 param subnet string
 param vnetcidrblock string
 param subnetcidrblock string
 param nsgName string
 param defaultOutboundAccess bool
-module virtualNetwork '2.network.bicep' = {
+param privateIPAddressVersion string
+param privateipconfig string
+param publicipconfig string
+param privateipaddress string
+param privateIPAllocationMethod string
+module virtualNetwork '2.network.bicep' = if (deploymodule == 'vNET') {
   name: vNET
   params: {
     vNET: vNET
@@ -30,24 +46,33 @@ module virtualNetwork '2.network.bicep' = {
     nsgName: nsgName
     environment: environment
     defaultOutboundAccess: defaultOutboundAccess
+    privateIPAddressVersion: privateIPAddressVersion
+    privateIPAllocationMethod: privateIPAllocationMethod
+    privateipconfig: privateipconfig
+    publicipconfig: publicipconfig
+    privateipaddress: privateipaddress
   }
 }
 
-param existingNSG string
-
-
+// Virtual Machine Parameters 
 param vmName string
 @secure()
 param adminPWD string
 param adminUSER string
-param vNIC string
-module virtualMachine '3.activedirectory.bicep' = {
+param bootDiagnosticsenabled bool
+param deleteoption string
+param vmSize string
+module virtualMachine '3.activedirectory.bicep' = if (deploymodule == 'VM') {
   name: vmName
   params: {
     adminPWD: adminPWD
     adminUSER: adminUSER
-    vmName: vmName
-    vNIC: vNIC
-    existingNSG: existingNSG
+    subnet: subnet
+    privateIPAllocationMethod: privateIPAllocationMethod
+    bootDiagnosticsenabled: bootDiagnosticsenabled
+    environment: environment
+    nsgName: nsgName
+    deleteoption: deleteoption
+    vmSize: vmSize
   }
 }
