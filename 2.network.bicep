@@ -1,33 +1,38 @@
 param environment string
-var location = resourceGroup().location
+param location  string = resourceGroup().location
 param vNET string
 param subnet string
 param vnetcidrblock string
 param subnetcidrblock string
 param nsgName string
 param defaultOutboundAccess bool
+param privateIPAddressVersion string
+param privateipconfig string
+param publicipconfig string
+param privateipaddress string
+param privateIPAllocationMethod string
 
-resource vNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+
+resource vNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${location}-${nsgName}-${environment}'
   location: location
 }
 
-resource vNet'Microsoft.Network/virtualNetworks@2024-01-01' = {
+
+resource vNet'Microsoft.Network/virtualNetworks@2023-11-01' = {
   name: vNET
   location: location
   properties: {
     addressSpace: {
-      addressPrefixes: [
-        vnetcidrblock
+      addressPrefixes:[ vnetcidrblock
       ]
+      
     }
     subnets: [
       {
         name: subnet
         properties: {
-          addressPrefixes: [
-            subnetcidrblock
-          ]
+          addressPrefix: subnetcidrblock
           defaultOutboundAccess: defaultOutboundAccess
           networkSecurityGroup: {
              id: vNSG.id
@@ -37,4 +42,24 @@ resource vNet'Microsoft.Network/virtualNetworks@2024-01-01' = {
     ]
     }  
   }
-
+  
+resource networkinterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
+  name: 'aduceastus'
+  location: location
+  properties: {
+   ipConfigurations: [
+     {
+       name: privateipconfig
+       properties: {
+         privateIPAddressVersion: privateIPAddressVersion
+         privateIPAllocationMethod: privateIPAllocationMethod
+          privateIPAddress: privateipaddress
+         subnet: {
+          id: '${vNet.id}/subnets/${subnet}'
+        }        
+       }
+     }
+   ]
+  
+  }
+}
