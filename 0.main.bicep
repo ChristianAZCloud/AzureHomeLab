@@ -14,6 +14,7 @@ param deploymodule string
 param vaultName string
 param keyvaultrg string
 param enabledfortemplatedeployment bool
+//
 module keyVault '1.KeyVault.bicep' = if (deploymodule == 'keyVault'){
   name: vaultName
   scope: resourceGroup(keyvaultrg)
@@ -26,53 +27,85 @@ module keyVault '1.KeyVault.bicep' = if (deploymodule == 'keyVault'){
 
 // Virtual Network Parameters 
 param vNET string
-param subnet string
 param vnetcidrblock string
-param subnetcidrblock string
-param nsgName string
+param activedirectorysubnetPrefix string
 param defaultOutboundAccess bool
+//resource vmnetworkinterface
 param privateIPAddressVersion string
 param privateipconfig string
-param publicipconfig string
 param privateipaddress string
 param privateIPAllocationMethod string
+//
+param publicipsku object
+param publicIPAddressVersion string
+param publicIPAllocationMethod string
+param gatewayType string
+param vpnGatewayGeneration string
+param gatewaySku object
+param activeActive bool
+param gtwyaddressPrefix string
+@secure()
+param localgatewayIpAddress string
+param localgatewayaddressPrefixes array
+@secure()
+param authorizationKey string
+param vpntype string
+param ipsecPolicies array
+param connectionType string
+param connectionMode string
+param connectionProtocol string
+//
 module virtualNetwork '2.network.bicep' = if (deploymodule == 'vNET') {
   name: vNET
   params: {
-    vNET: vNET
     vnetcidrblock: vnetcidrblock
-    subnet: subnet
-    subnetcidrblock: subnetcidrblock
-    nsgName: nsgName
+    activedirectorysubnetPrefix: activedirectorysubnetPrefix
     environment: environment
     defaultOutboundAccess: defaultOutboundAccess
     privateIPAddressVersion: privateIPAddressVersion
     privateIPAllocationMethod: privateIPAllocationMethod
     privateipconfig: privateipconfig
-    publicipconfig: publicipconfig
     privateipaddress: privateipaddress
+    publicipsku: publicipsku
+    publicIPAddressVersion: publicIPAddressVersion
+    publicIPAllocationMethod: publicIPAllocationMethod
+    gatewaySku: gatewaySku
+    gatewayType: gatewayType
+    vpnGatewayGeneration: vpnGatewayGeneration
+    activeActive: activeActive
+    gtwyaddressPrefix: gtwyaddressPrefix
+    localgatewayIpAddress: localgatewayIpAddress
+    localgatewayaddressPrefixes: localgatewayaddressPrefixes
+    authorizationKey: authorizationKey
+    vpntype: vpntype
+    connectionType: connectionType
+    ipsecPolicies: ipsecPolicies
+    connectionMode: connectionMode
+    connectionProtocol: connectionProtocol
+    resourcetags: resourcetags
   }
 }
 
 // Virtual Machine Parameters 
-param vmName string
+param vmNamePrefix string
 @secure()
 param adminPWD string
 param adminUSER string
 param bootDiagnosticsenabled bool
 param deleteoption string
 param vmSize string
+param imagereference object
+//
 module virtualMachine '3.activedirectory.bicep' = if (deploymodule == 'VM') {
-  name: vmName
+  name: vmNamePrefix
   params: {
     adminPWD: adminPWD
     adminUSER: adminUSER
-    subnet: subnet
-    privateIPAllocationMethod: privateIPAllocationMethod
     bootDiagnosticsenabled: bootDiagnosticsenabled
-    environment: environment
-    nsgName: nsgName
     deleteoption: deleteoption
     vmSize: vmSize
+    imagereference: imagereference
+    vmNamePrefix: vmNamePrefix
+     
   }
 }
