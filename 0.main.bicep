@@ -99,7 +99,8 @@ param adminUSER string
 param bootDiagnosticsenabled bool
 param deleteoption string
 param vmSize string
-param imagereference object
+param imagereference object 
+param diskSizeGB int
 //
 module virtualMachine '3.activedirectory.bicep' = if (deploymodule == 'VM') {
   name: vmNamePrefix
@@ -111,5 +112,6 @@ module virtualMachine '3.activedirectory.bicep' = if (deploymodule == 'VM') {
     vmSize: vmSize
     imagereference: imagereference
     environment: environment     
+    diskSizeGB: diskSizeGB
   }
 }

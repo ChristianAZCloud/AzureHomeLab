@@ -12,6 +12,7 @@ param bootDiagnosticsenabled bool
 param deleteoption string
 param vmSize string
 param imagereference object
+param diskSizeGB int
 var vmName = 'azw-aduc'
 var aducnetworkinterfaceName = 'aducNIC'
 
@@ -35,6 +36,7 @@ properties: {
          id: NIC.id
          properties: {
            deleteOption: deleteoption
+          
          }
        }
      ]
@@ -46,14 +48,6 @@ properties: {
        computerName: vmName
        windowsConfiguration: {
              timeZone: 'Eastern Standard Time'
-             winRM: {
-               listeners: [
-                 {
-                   protocol: 'Https'
-                   
-                 }
-               ]
-             }
           }
     }
 hardwareProfile: {
@@ -64,7 +58,7 @@ storageProfile: {
    osDisk: {
     createOption:  'FromImage' 
     deleteOption: 'Detach'
-   diskSizeGB: 64
+   diskSizeGB: diskSizeGB
     
    }
 }
