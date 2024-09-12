@@ -10,7 +10,7 @@ var publicipName = '${vpnGTWYName}-publicip'
 var aducnetworkinterfaceName = 'aducNIC'
 var localnetworkgtwyName = 'onpremlocalgtwy'
 var connectionName = 'azure-to-onprem'
-
+var routetableName = 'routetable'
 resource aducNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${aducNSGName}-${environment}'
   location: location
@@ -206,3 +206,8 @@ resource connection 'Microsoft.Network/connections@2023-11-01' = {
        }
 }
   }
+
+resource routetable 'Microsoft.Network/routeTables@2023-11-01' = {
+  name: '${routetableName}-${environment}'
+  location: location
+}
