@@ -15,6 +15,7 @@ param vaultName string
 param keyvaultrg string
 param enabledfortemplatedeployment bool
 //
+
 module keyVault '1.KeyVault.bicep' = if (deploymodule == 'keyVault'){
   name: vaultName
   scope: resourceGroup(keyvaultrg)
@@ -54,6 +55,8 @@ param ipsecPolicies array
 param connectionType string
 param connectionMode string
 param connectionProtocol string
+param enablePrivateIpAddress bool
+param dpdTimeoutSeconds int
 //
 module virtualNetwork '2.network.bicep' = if (deploymodule == 'vNET') {
   name: vNET
@@ -83,6 +86,8 @@ module virtualNetwork '2.network.bicep' = if (deploymodule == 'vNET') {
     connectionMode: connectionMode
     connectionProtocol: connectionProtocol
     resourcetags: resourcetags
+    enablePrivateIpAddress: enablePrivateIpAddress
+    dpdTimeoutSeconds: dpdTimeoutSeconds
   }
 }
 
@@ -105,7 +110,6 @@ module virtualMachine '3.activedirectory.bicep' = if (deploymodule == 'VM') {
     deleteoption: deleteoption
     vmSize: vmSize
     imagereference: imagereference
-    vmNamePrefix: vmNamePrefix
-     
+    environment: environment     
   }
 }

@@ -140,11 +140,13 @@ param gtwyaddressPrefix string
   'PolicyBased'
   'RouteBased'])
 param vpntype string
+param enablePrivateIpAddress bool
 resource vpngtwy1 'Microsoft.Network/virtualNetworkGateways@2023-11-01' = {
   name: '${vpnGTWYName}-${environment}'
   location: location
   tags: resourcetags
   properties: {
+    enablePrivateIpAddress: enablePrivateIpAddress
     vpnType: vpntype
     gatewayType: gatewayType
     sku: gatewaySku
@@ -181,6 +183,7 @@ param connectionMode string
 @allowed(['IKEv1','IKEv2'])
 param connectionProtocol string
 param ipsecPolicies array
+param dpdTimeoutSeconds int
 resource connection 'Microsoft.Network/connections@2023-11-01' = {
   name: connectionName
   location: location
@@ -191,6 +194,7 @@ resource connection 'Microsoft.Network/connections@2023-11-01' = {
     connectionMode: connectionMode
     connectionProtocol: connectionProtocol
     ipsecPolicies: ipsecPolicies
+    dpdTimeoutSeconds: dpdTimeoutSeconds
       virtualNetworkGateway1: {
          id: vpngtwy1.id
          properties: {

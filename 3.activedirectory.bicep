@@ -1,25 +1,27 @@
 // Global Parameters 
-@secure()
-param adminPWD string
-param adminUSER string
+param environment string
+param location string = resourceGroup().location
 
 
 
 // Module Parameters and Variables 
-param location string = resourceGroup().location
+@secure()
+param adminPWD string
+param adminUSER string
 param bootDiagnosticsenabled bool
 param deleteoption string
 param vmSize string
 param imagereference object
-param vmNamePrefix string
-var vmName = '${vmNamePrefix}${location}'
+var vmName = 'azw-aduc'
+var aducnetworkinterfaceName = 'aducNIC'
+
 
 resource NIC 'Microsoft.Network/networkInterfaces@2023-11-01' existing = {
-  name: 'aduceastus'
+  name: '${aducnetworkinterfaceName}-${environment}'
 }
 
 resource ADUC 'Microsoft.Compute/virtualMachines@2023-09-01' = {
-name:  vmName
+name:  '${vmName}-${environment}'
 location: location 
 properties: {
  diagnosticsProfile: {
