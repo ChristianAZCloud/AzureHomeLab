@@ -14,7 +14,7 @@ param vmSize string
 param imagereference object
 param diskSizeGB int
 var vmName = 'azw-aduc'
-var aducnetworkinterfaceName = 'aducNIC'
+var aducnetworkinterfaceName = 'azwaducNIC'
 
 
 resource NIC 'Microsoft.Network/networkInterfaces@2023-11-01' existing = {
@@ -36,7 +36,6 @@ properties: {
          id: NIC.id
          properties: {
            deleteOption: deleteoption
-          
          }
        }
      ]

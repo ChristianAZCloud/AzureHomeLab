@@ -4,20 +4,14 @@ param resourcetags object
 
 var vpnGTWYName = 'onpremvpngtwy'
 var aducNSGName = 'aducNSG'
-var gtwyNSG2Name = '${vpnGTWYName}NSG'
 var vNETName = 'virtualnetwork'
 var publicipName = '${vpnGTWYName}-publicip'
-var aducnetworkinterfaceName = 'aducNIC'
+var aducnetworkinterfaceName = 'azwaducNIC'
 var localnetworkgtwyName = 'onpremlocalgtwy'
 var connectionName = 'azure-to-onprem'
 var routetableName = 'routetable'
 resource aducNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${aducNSGName}-${environment}'
-  location: location
-}
-
-resource gtwyNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
-  name: '${gtwyNSG2Name}-${environment}'
   location: location
 }
 
