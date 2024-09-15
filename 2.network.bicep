@@ -10,6 +10,8 @@ var aducnetworkinterfaceName = 'azwaducNIC'
 var localnetworkgtwyName = 'onpremlocalgtwy'
 var connectionName = 'azure-to-onprem'
 var routetableName = 'routetable'
+var sccmnicName = 'sccmNIC'
+var sqlsvrNIC = 'sqlsvrNIC'
 resource aducNSG 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
   name: '${aducNSGName}-${environment}'
   location: location
@@ -46,6 +48,25 @@ resource gtwysubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
      defaultOutboundAccess: defaultOutboundAccess
     }
   }
+param sqlsvrsubnetprfix string
+param sccmsubnetprefix string
+resource sccmsubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
+  name: 'SCCMSubnet'
+  parent: vNet
+  properties: {
+   addressPrefix: sccmsubnetprefix
+   defaultOutboundAccess: defaultOutboundAccess
+  }
+}
+
+resource sqlsvrsubnet 'Microsoft.Network/virtualNetworks/subnets@2023-11-01' = {
+  name: 'SQLSVRSubnet'
+  parent: vNet
+  properties: {
+   addressPrefix: sqlsvrsubnetprfix
+   defaultOutboundAccess: defaultOutboundAccess
+  }
+}
 
 @description('Public IP SKU "BASIC" will be retired Sep 30 2025')
 param publicipsku object
@@ -76,10 +97,14 @@ param privateIPAddressVersion string
 param privateipconfig string
 param privateipaddress string
 param privateIPAllocationMethod string
+param enableIPForwarding bool
+param sccmipaddress string
+param sqlsvripaddress string
 resource aducnetworkinterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
   name: '${aducnetworkinterfaceName}-${environment}'
   location: location
   properties: {
+    enableIPForwarding: enableIPForwarding
     networkSecurityGroup: {
        id: aducNSG.id
     }
@@ -92,6 +117,55 @@ resource aducnetworkinterface 'Microsoft.Network/networkInterfaces@2023-11-01' =
           privateIPAddress: privateipaddress
          subnet: {
           id: activedirectorysubnet.id
+        }        
+       }
+     }
+   ]
+  
+  }
+}
+resource sccmnetworkinterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
+  name: '${sccmnicName}-${environment}'
+  location: location
+  properties: {
+    enableIPForwarding: enableIPForwarding
+    networkSecurityGroup: {
+       id: aducNSG.id
+    }
+   ipConfigurations: [
+     {
+       name: privateipconfig
+       properties: {
+         privateIPAddressVersion: privateIPAddressVersion
+         privateIPAllocationMethod: privateIPAllocationMethod
+          privateIPAddress: sccmipaddress
+         subnet: {
+          id: sccmsubnet.id
+        }        
+       }
+     }
+   ]
+  
+  }
+}
+
+resource sqlsvrnetworkinterface 'Microsoft.Network/networkInterfaces@2023-11-01' = {
+  name: '${sqlsvrNIC}-${environment}'
+  location: location
+  properties: {
+    enableIPForwarding: enableIPForwarding
+    networkSecurityGroup: {
+       id: aducNSG.id
+    }
+   ipConfigurations: [
+     {
+       name: privateipconfig
+       properties: {
+         privateIPAddressVersion: privateIPAddressVersion
+         privateIPAllocationMethod: privateIPAllocationMethod
+          privateIPAddress: sqlsvripaddress
+         subnet: {
+          id: sqlsvrsubnet.id
         }        
        }
      }
@@ -135,7 +209,8 @@ param gtwyaddressPrefix string
   'RouteBased'])
 param vpntype string
 param enablePrivateIpAddress bool
-resource vpngtwy1 'Microsoft.Network/virtualNetworkGateways@2023-11-01' = {
+param deployvpngtwy bool
+resource vpngtwy1 'Microsoft.Network/virtualNetworkGateways@2023-11-01' = if (deployvpngtwy == true) {
   name: '${vpnGTWYName}-${environment}'
   location: location
   tags: resourcetags
@@ -178,11 +253,13 @@ param connectionMode string
 param connectionProtocol string
 param ipsecPolicies array
 param dpdTimeoutSeconds int
+param useLocalAzureIpAddress bool
 resource connection 'Microsoft.Network/connections@2023-11-01' = {
   name: connectionName
   location: location
   tags: resourcetags
   properties: {
+    useLocalAzureIpAddress: useLocalAzureIpAddress
     authorizationKey: authorizationKey
     connectionType: connectionType
     connectionMode: connectionMode

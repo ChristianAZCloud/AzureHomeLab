@@ -5,6 +5,8 @@ param environment string
   'vNET'
   'VM'
   'keyVault'
+  'SCCM'
+  'SQL'
 ])
 param deploymodule string
 
@@ -36,6 +38,7 @@ param privateIPAddressVersion string
 param privateipconfig string
 param privateipaddress string
 param privateIPAllocationMethod string
+param enableIPForwarding bool
 //
 param publicipsku object
 param publicIPAddressVersion string
@@ -57,6 +60,12 @@ param connectionMode string
 param connectionProtocol string
 param enablePrivateIpAddress bool
 param dpdTimeoutSeconds int
+param deployvpngtwy bool
+param useLocalAzureIpAddress bool
+param sccmsubnetprefix string
+param sqlsvrsubnetprefix string
+param sccmipaddress string
+param sqlsvripaddress string
 //
 module virtualNetwork '2.network.bicep' = if (deploymodule == 'vNET') {
   name: vNET
@@ -88,6 +97,13 @@ module virtualNetwork '2.network.bicep' = if (deploymodule == 'vNET') {
     resourcetags: resourcetags
     enablePrivateIpAddress: enablePrivateIpAddress
     dpdTimeoutSeconds: dpdTimeoutSeconds
+    enableIPForwarding: enableIPForwarding
+    deployvpngtwy: deployvpngtwy
+    useLocalAzureIpAddress: useLocalAzureIpAddress
+    sccmsubnetprefix: sccmsubnetprefix
+    sqlsvrsubnetprfix: sqlsvrsubnetprefix
+    sccmipaddress: sccmipaddress
+    sqlsvripaddress: sqlsvripaddress
   }
 }
 
@@ -113,5 +129,34 @@ module virtualMachine '3.activedirectory.bicep' = if (deploymodule == 'VM') {
     imagereference: imagereference
     environment: environment     
     diskSizeGB: diskSizeGB
+  }
+}
+
+module sccmVM '4.sccmserver.bicep' = if (deploymodule == 'SCCM') {
+  name: 'sccmVM'
+  params: {
+    adminPWD: adminPWD
+    adminUSER: adminUSER
+    bootDiagnosticsenabled: bootDiagnosticsenabled
+    deleteoption: deleteoption
+    diskSizeGB: diskSizeGB
+    environment: environment
+    imagereference: imagereference
+    vmSize: vmSize
+  }
+  
+}
+
+module sqlsvrVM '5.sqlserver.bicep' = if (deploymodule == 'SQL') {
+  name: 'sqlsvrVM'
+  params: {
+    adminPWD: adminPWD
+    adminUSER: adminUSER
+    bootDiagnosticsenabled: bootDiagnosticsenabled
+    deleteoption: deleteoption
+    diskSizeGB: diskSizeGB
+    environment: environment
+    imagereference: imagereference
+    vmSize: vmSize
   }
 }
