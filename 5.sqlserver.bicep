@@ -10,7 +10,7 @@ param adminPWD string
 param adminUSER string
 param bootDiagnosticsenabled bool
 param deleteoption string
-param vmSize string
+param sqlvmSize string
 param imagereference object
 param diskSizeGB int
 var vmName = 'sv-sql'
@@ -50,7 +50,7 @@ properties: {
           }
     }
 hardwareProfile: {
-   vmSize:  vmSize
+   vmSize:  sqlvmSize
 }
 storageProfile: {
    imageReference: imagereference

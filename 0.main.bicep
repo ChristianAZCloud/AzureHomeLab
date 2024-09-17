@@ -147,6 +147,7 @@ module sccmVM '4.sccmserver.bicep' = if (deploymodule == 'SCCM') {
   
 }
 
+param sqlvmSize string
 module sqlsvrVM '5.sqlserver.bicep' = if (deploymodule == 'SQL') {
   name: 'sqlsvrVM'
   params: {
@@ -157,6 +158,6 @@ module sqlsvrVM '5.sqlserver.bicep' = if (deploymodule == 'SQL') {
     diskSizeGB: diskSizeGB
     environment: environment
     imagereference: imagereference
-    vmSize: vmSize
+    sqlvmSize: sqlvmSize
   }
 }

@@ -2,12 +2,12 @@ param environment string
 param location  string = resourceGroup().location
 param resourcetags object
 
-var vpnGTWYName = 'onpremvpngtwy'
+var vpnGTWYName = 'vpngtwy'
 var aducNSGName = 'aducNSG'
 var vNETName = 'virtualnetwork'
 var publicipName = '${vpnGTWYName}-publicip'
 var aducnetworkinterfaceName = 'azwaducNIC'
-var localnetworkgtwyName = 'onpremlocalgtwy'
+var localnetworkgtwyName = 'localgtwy'
 var connectionName = 'azure-to-onprem'
 var routetableName = 'routetable'
 var sccmnicName = 'sccmNIC'
